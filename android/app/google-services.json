@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "499590460369",
+    "project_id": "boardify-app",
+    "storage_bucket": "boardify-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:499590460369:android:6f7dbc01e088fb2a6be6f0",
+        "android_client_info": {
+          "package_name": "com.example.trello_clone"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "499590460369-q3thk6go5iedpqp8eco5vrt4jlujidvr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.trello_clone",
+            "certificate_hash": "1e0ae034b1ebfdfa30f3d497fb182367774514e2"
+          }
+        },
+        {
+          "client_id": "499590460369-pddt37encivkm61u6cq2l38s26lfi1tq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_DcLAt-V4fpN-oRPcFVDMPzCZQiQgGdI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "499590460369-pddt37encivkm61u6cq2l38s26lfi1tq.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "499590460369-j1st9f3pcrfd167pbkt9cgailis2kt5a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.trelloClone"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
