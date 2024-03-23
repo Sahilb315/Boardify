@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:trello_clone/features/board/model/card_model.dart';
 import 'package:trello_clone/features/board/model/list_model.dart';
 import 'package:trello_clone/features/home/presentation/ui/text_field.dart';
+import 'package:trello_clone/utils/text_field_decoration.dart';
 
 class BoardPage extends StatefulWidget {
   const BoardPage({super.key});
@@ -27,7 +28,6 @@ class _BoardPageState extends State<BoardPage> {
   final TextEditingController listNameController = TextEditingController();
   final TextEditingController addNewListNameController =
       TextEditingController();
-
   final TextEditingController addNewCardNameController =
       TextEditingController();
   final TextEditingController addNewCardDescriptionController =
@@ -580,32 +580,4 @@ class _BoardPageState extends State<BoardPage> {
       },
     );
   }
-}
-
-InputDecoration customTextFieldDecoration(String name) {
-  return InputDecoration(
-    enabledBorder: const UnderlineInputBorder(
-      borderSide: BorderSide(
-        color: Colors.blue,
-        width: 2,
-      ),
-    ),
-    focusedBorder: const UnderlineInputBorder(
-      borderSide: BorderSide(
-        color: Colors.blue,
-        width: 2,
-      ),
-    ),
-    border: const UnderlineInputBorder(
-      borderSide: BorderSide(
-        color: Colors.blue,
-        width: 2,
-      ),
-    ),
-    hintText: name,
-    hintStyle: TextStyle(
-      color: Colors.grey.shade500,
-      fontFamily: "Poppins",
-    ),
-  );
 }

@@ -1,10 +1,11 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:trello_clone/features/board/model/board_model.dart';
 import 'package:trello_clone/features/board/presentation/page/board_page.dart';
 import 'package:trello_clone/features/home/bloc/home_bloc.dart';
 import 'package:trello_clone/features/home/presentation/ui/drawer.dart';
+import 'package:trello_clone/utils/text_field_decoration.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,15 +16,19 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldState = GlobalKey<ScaffoldState>();
+  final TextEditingController _newBoardNameController = TextEditingController();
 
   User? user;
   @override
   void initState() {
     user = FirebaseAuth.instance.currentUser;
+    // fToast = FToast();
+    homeBloc.add(HomeFetchEvent());
     super.initState();
   }
 
   final homeBloc = HomeBloc();
+  // late FToast fToast;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +61,9 @@ class _HomePageState extends State<HomePage> {
           foregroundColor: Colors.black,
           backgroundColor: Colors.green.shade400.withOpacity(0.8),
           shape: const CircleBorder(),
-          onPressed: () {},
+          onPressed: () {
+            homeBloc.add(HomeNewBoardSheetEvent());
+          },
           child: const Icon(Icons.add),
         ),
       ),
@@ -85,75 +92,187 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             );
+          } else if (state is HomeNewBoardBottomSheetActionState) {
+            newBoardAddSheet(
+              context: context,
+              boardNameController: _newBoardNameController,
+              homeBloc: homeBloc,
+            );
+          } else if (state is HomeAddNewBoardActionState) {
+            Navigator.pop(context);
+            _newBoardNameController.clear();
           }
         },
         builder: (context, state) {
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: double.maxFinite,
-                color: Colors.black,
-                child: const Padding(
-                  padding: EdgeInsets.all(12.0),
-                  child: Text(
-                    "Your Workspace",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
+          if (state is HomeLoadingState) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            );
+          } else if (state is HomeFetchBoardsState) {
+            final boards = state.boards;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: double.maxFinite,
+                  color: Colors.black,
+                  child: const Padding(
+                    padding: EdgeInsets.all(12.0),
+                    child: Text(
+                      "Your Workspace",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              Expanded(
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 6,
-                    mainAxisExtent: 140,
-                    crossAxisSpacing: 0,
-                  ),
-                  itemCount: 2,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GestureDetector(
-                        onTap: () {
-                          homeBloc.add(HomeNavigateToBoardPageEvent());
-                        },
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.amber,
-                                  borderRadius: BorderRadius.circular(8),
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 6,
+                      mainAxisExtent: 140,
+                      crossAxisSpacing: 0,
+                    ),
+                    itemCount: boards.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          onTap: () {
+                            homeBloc.add(HomeNavigateToBoardPageEvent());
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.amber,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            const Text(
-                              "Basic Board",
-                              style: TextStyle(
-                                fontFamily: "Poppins",
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
+                              const SizedBox(
+                                height: 4,
                               ),
-                            ),
-                          ],
+                              Text(
+                                boards[index].boardName,
+                                style: const TextStyle(
+                                  fontFamily: "Poppins",
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
-          );
+              ],
+            );
+          } else {
+            return const Center(
+              child: Text("Error Occured"),
+            );
+          }
         },
       ),
+    );
+  }
+
+  Future<void> newBoardAddSheet({
+    required BuildContext context,
+    required TextEditingController boardNameController,
+    required HomeBloc homeBloc,
+  }) {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (context) {
+        return SingleChildScrollView(
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey.shade800,
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(24),
+                topRight: Radius.circular(24),
+              ),
+            ),
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(
+                right: 12.0,
+                left: 12.0,
+                bottom: 32,
+                top: 18,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade900,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(
+                            Icons.cancel_sharp,
+                            color: Colors.white,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            if (boardNameController.text.isEmpty) {
+                              return;
+                            }
+                            homeBloc.add(
+                              HomeAddNewBoardEvent(
+                                boardModel: BoardModel(
+                                  boardName: boardNameController.text,
+                                  listsInBoard: [],
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.check,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TextField(
+                    cursorColor: Colors.blue,
+                    style: const TextStyle(
+                      color: Colors.white,
+                    ),
+                    onChanged: (value) {
+                      boardNameController.text = value;
+                    },
+                    decoration: customTextFieldDecoration("Board Name"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

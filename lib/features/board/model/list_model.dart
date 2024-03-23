@@ -44,7 +44,7 @@ class ListModel {
     return ListModel(
       id: map['id'] as String,
       listName: map['listName'] as String,
-      cards: List<CardModel>.from((map['cards'] as List<int>).map<CardModel>((x) => CardModel.fromMap(x as Map<String,dynamic>),),),
+      cards: List<CardModel>.from((map['cards'] as List).map<CardModel>((x) => CardModel.fromMap(x as Map<String,dynamic>),),),
       isEditing: map['isEditing'] as bool,
     );
   }

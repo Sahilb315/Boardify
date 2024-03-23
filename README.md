@@ -1,4 +1,4 @@
-# trello_clone
+# Boardify
 
 A new Flutter project.
 
