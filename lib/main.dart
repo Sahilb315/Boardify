@@ -20,14 +20,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AuthBloc(),
-      child: Builder(
-        builder: (context) {
-          return const MaterialApp(
-            home: UserLoggedInOrNot(),
-            debugShowCheckedModeBanner: false,
-          );
-        }
-      ),
+      child: Builder(builder: (context) {
+        return MaterialApp(
+          home: const UserLoggedInOrNot(),
+          theme: ThemeData(
+            textSelectionTheme: const TextSelectionThemeData(
+              selectionHandleColor: Colors.blue,
+            ),
+          ),
+          debugShowCheckedModeBanner: false,
+        );
+      }),
     );
   }
 }

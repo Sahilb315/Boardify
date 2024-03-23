@@ -56,7 +56,7 @@ class _AuthPageState extends State<AuthPage> {
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) =>
-                   HomePage(),
+                  const HomePage(),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 var begin = const Offset(0, 1);

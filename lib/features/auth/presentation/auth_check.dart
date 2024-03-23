@@ -1,3 +1,4 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:trello_clone/features/auth/presentation/auth_page.dart';
@@ -9,12 +10,12 @@ class UserLoggedInOrNot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseAuth.instance.authStateChanges(),
+      stream: FirebaseAuth.instance.idTokenChanges(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return const AuthPage();
+          return const HomePage();
         } else {
-          return HomePage();
+          return const AuthPage();
         }
       },
     );
