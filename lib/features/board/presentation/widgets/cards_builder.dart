@@ -19,7 +19,8 @@ class CardsBuilder extends StatelessWidget {
         shrinkWrap: true,
         itemCount: item.cards.length,
         itemBuilder: (context, cardIndex) {
-          return Draggable(
+          // LongPressDraggable(child: child, feedback: feedback)
+          return LongPressDraggable(
             data: item.cards[cardIndex],
             childWhenDragging: Container(
               width: double.maxFinite,

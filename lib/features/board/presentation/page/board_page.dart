@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trello_clone/features/board/bloc/board_bloc.dart';
 import 'package:trello_clone/features/board/model/card_model.dart';
 import 'package:trello_clone/features/board/model/list_model.dart';
-import 'package:trello_clone/features/board/presentation/ui/custom_scaffold.dart';
-import 'package:trello_clone/features/home/presentation/ui/text_field.dart';
+import 'package:trello_clone/features/board/presentation/widgets/custom_scaffold.dart';
+import 'package:trello_clone/features/home/presentation/widgets/text_field.dart';
 import 'package:trello_clone/utils/text_field_decoration.dart';
-import '../ui/cards_builder.dart';
+import '../widgets/cards_builder.dart';
 
 class BoardPage extends StatefulWidget {
   final String docID;

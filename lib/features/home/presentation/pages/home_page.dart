@@ -5,7 +5,7 @@ import 'package:trello_clone/features/board/model/board_model.dart';
 import 'package:trello_clone/features/board/model/list_model.dart';
 import 'package:trello_clone/features/board/presentation/page/board_page.dart';
 import 'package:trello_clone/features/home/bloc/home_bloc.dart';
-import 'package:trello_clone/features/home/presentation/ui/drawer.dart';
+import 'package:trello_clone/features/home/presentation/widgets/drawer.dart';
 import 'package:trello_clone/utils/text_field_decoration.dart';
 
 class HomePage extends StatefulWidget {
@@ -23,13 +23,12 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     user = FirebaseAuth.instance.currentUser;
-    // fToast = FToast();
+
     homeBloc.add(HomeFetchEvent());
     super.initState();
   }
 
   final homeBloc = HomeBloc();
-  // late FToast fToast;
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +116,19 @@ class _HomePageState extends State<HomePage> {
             );
           } else if (state is HomeFetchBoardsState) {
             final boards = state.boards;
+            if (boards.isEmpty) {
+              return const Center(
+                child: Text(
+                  "No Boards Found\n Create a new Board to get started!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontFamily: "Poppins",
+                    fontSize: 16,
+                  ),
+                ),
+              );
+            }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
