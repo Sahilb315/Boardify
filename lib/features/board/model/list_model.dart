@@ -8,8 +8,8 @@ import 'package:trello_clone/features/board/model/card_model.dart';
 class ListModel {
   final String id;
    String listName;
-  final List<CardModel> cards;
   bool isEditing;
+  final List<CardModel> cards;
   ListModel({
     required this.id,
     required this.listName,

@@ -26,12 +26,21 @@ class HomeRepo {
 
   Future<void> addBoard(BoardModel model) async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      await FirebaseFirestore.instance
-          .collection(USERS_COLLECTION)
-          .doc(user!.email)
+      final firestore = FirebaseFirestore.instance.collection(USERS_COLLECTION);
+      final user = FirebaseAuth.instance.currentUser!.email;
+      await firestore
+          .doc(user)
           .collection(BOARD_COLLECTION)
-          .add(model.toMap());
+          .add(model.toMap())
+          .then((value) async {
+        await firestore
+            .doc(user)
+            .collection(BOARD_COLLECTION)
+            .doc(value.id)
+            .update({
+          'docID': value.id,
+        });
+      });
     } catch (e) {
       log(e.toString());
     }

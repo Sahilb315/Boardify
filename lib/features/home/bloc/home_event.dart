@@ -3,7 +3,11 @@ part of 'home_bloc.dart';
 @immutable
 sealed class HomeEvent {}
 
-class HomeNavigateToBoardPageEvent extends HomeEvent {}
+class HomeNavigateToBoardPageEvent extends HomeEvent {
+  final String docID;
+
+  HomeNavigateToBoardPageEvent({required this.docID});
+}
 
 class HomeFetchEvent extends HomeEvent {}
 

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trello_clone/features/board/model/board_model.dart';
+import 'package:trello_clone/features/board/model/list_model.dart';
 import 'package:trello_clone/features/board/presentation/page/board_page.dart';
 import 'package:trello_clone/features/home/bloc/home_bloc.dart';
 import 'package:trello_clone/features/home/presentation/ui/drawer.dart';
@@ -77,7 +78,9 @@ class _HomePageState extends State<HomePage> {
               context,
               PageRouteBuilder(
                 pageBuilder: (context, animation, secondaryAnimation) =>
-                    const BoardPage(),
+                    BoardPage(
+                  docID: state.docID,
+                ),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
                   var begin = const Offset(1, 0);
@@ -108,6 +111,8 @@ class _HomePageState extends State<HomePage> {
             return const Center(
               child: CircularProgressIndicator(
                 color: Colors.white,
+                strokeWidth: 2.5,
+                strokeCap: StrokeCap.round,
               ),
             );
           } else if (state is HomeFetchBoardsState) {
@@ -141,10 +146,17 @@ class _HomePageState extends State<HomePage> {
                     itemCount: boards.length,
                     itemBuilder: (context, index) {
                       return Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8.0,
+                          horizontal: 10.0,
+                        ),
                         child: GestureDetector(
                           onTap: () {
-                            homeBloc.add(HomeNavigateToBoardPageEvent());
+                            homeBloc.add(
+                              HomeNavigateToBoardPageEvent(
+                                docID: boards[index].docID,
+                              ),
+                            );
                           },
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -243,8 +255,19 @@ class _HomePageState extends State<HomePage> {
                             homeBloc.add(
                               HomeAddNewBoardEvent(
                                 boardModel: BoardModel(
+                                  docID: "",
                                   boardName: boardNameController.text,
-                                  listsInBoard: [],
+                                  listsInBoard: [
+                                    ListModel(
+                                      id: DateTime.now()
+                                          .millisecondsSinceEpoch
+                                          .remainder(100000)
+                                          .toString(),
+                                      listName: "TODO",
+                                      cards: [],
+                                      isEditing: false,
+                                    ),
+                                  ],
                                 ),
                               ),
                             );

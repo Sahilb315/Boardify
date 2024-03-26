@@ -7,7 +7,7 @@ abstract class HomeActionState extends HomeState {}
 
 final class HomeInitial extends HomeState {}
 
-class HomeLoadingState extends HomeActionState {}
+class HomeLoadingState extends HomeState {}
 
 class HomeFetchBoardsState extends HomeState {
   final List<BoardModel> boards;
@@ -15,7 +15,11 @@ class HomeFetchBoardsState extends HomeState {
   HomeFetchBoardsState({required this.boards});
 }
 
-class HomeNavigateToBoardPageActionState extends HomeActionState {}
+class HomeNavigateToBoardPageActionState extends HomeActionState {
+  final String docID;
+
+  HomeNavigateToBoardPageActionState({required this.docID});
+}
 
 class HomeNewBoardBottomSheetActionState extends HomeActionState {}
 
