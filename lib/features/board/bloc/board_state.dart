@@ -4,6 +4,8 @@ part of 'board_bloc.dart';
 @immutable
 sealed class BoardState {}
 
+abstract class BoardActionState extends BoardState {}
+
 final class BoardInitial extends BoardState {}
 
 class BoardLoadingState extends BoardState {}
@@ -16,4 +18,32 @@ class BoardLoadedState extends BoardState {
     required this.lists,
     required this.showListAppBar,
   });
+}
+
+class BoardPopMenuEditListNameActionState extends BoardActionState {
+  final BuildContext context;
+  final ListModel listModel;
+
+  BoardPopMenuEditListNameActionState({
+    required this.context,
+    required this.listModel,
+  });
+}
+
+class BoardAddNewCardSheetActionState extends BoardActionState {
+  final ListModel listModel;
+  final TextEditingController cardNameController;
+  final TextEditingController cardDescriptionController;
+
+  BoardAddNewCardSheetActionState({
+    required this.listModel,
+    required this.cardNameController,
+    required this.cardDescriptionController,
+  });
+}
+
+class BoardDeleteListActionState extends BoardActionState {
+  final String listID;
+
+  BoardDeleteListActionState({required this.listID});
 }

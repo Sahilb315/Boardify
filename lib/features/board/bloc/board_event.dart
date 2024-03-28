@@ -61,3 +61,39 @@ class BoardUpdateListNameEvent extends BoardEvent {
     required this.listModel,
   });
 }
+
+class BoardPopupMenuItemEditListNameEvent extends BoardEvent {
+  final BuildContext context;
+  final ListModel listModel;
+
+  BoardPopupMenuItemEditListNameEvent({
+    required this.context,
+    required this.listModel,
+  });
+}
+
+class BoardAddNewCardSheetEvent extends BoardEvent {
+  final ListModel listModel;
+  final TextEditingController cardNameController;
+  final TextEditingController cardDescriptionController;
+
+  BoardAddNewCardSheetEvent({
+    required this.listModel,
+    required this.cardNameController,
+    required this.cardDescriptionController,
+  });
+}
+
+class BoardDeleteListEvent extends BoardEvent {
+  final String listID;
+  final String docID;
+
+  BoardDeleteListEvent({required this.listID, required this.docID});
+}
+
+class BoardPopMenuDeleteListEvent extends BoardEvent {
+  final String listID;
+  final String docID;
+
+  BoardPopMenuDeleteListEvent({required this.listID, required this.docID});
+}

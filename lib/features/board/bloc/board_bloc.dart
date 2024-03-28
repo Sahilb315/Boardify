@@ -1,8 +1,9 @@
-// ignore_for_file: depend_on_referenced_packages
+// ignore_for_file: depend_on_referenced_packages, unnecessary_import
 
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:trello_clone/features/board/model/card_model.dart';
 import 'package:trello_clone/features/board/model/list_model.dart';
@@ -15,10 +16,15 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
   BoardBloc() : super(BoardInitial()) {
     on<BoardFetchListEvent>(boardFetchListEvent);
     on<BoardAddListEvent>(boardAddListEvent);
-    on<BoardOnTapAddListEvent>(boardChangeEvent);
+    on<BoardOnTapAddListEvent>(boardOnTapAddListEvent);
     on<BoardDragDataAcceptEvent>(boardDragDataAcceptEvent);
     on<BoardUpdateListNameEvent>(boardUpdateListNameEvent);
     on<BoardAddCardInListEvent>(boardAddCardInListEvent);
+    on<BoardPopupMenuItemEditListNameEvent>(
+        boardPopupMenuItemEditListNameEvent);
+    on<BoardAddNewCardSheetEvent>(boardAddNewCardSheetEvent);
+    on<BoardDeleteListEvent>(boardDeleteListEvent);
+    on<BoardPopMenuDeleteListEvent>(boardPopMenuDeleteListEvent);
   }
 
   final boardRepo = BoardRepo();
@@ -40,7 +46,7 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
     emit(BoardLoadedState(lists: list, showListAppBar: false));
   }
 
-  FutureOr<void> boardChangeEvent(
+  FutureOr<void> boardOnTapAddListEvent(
     BoardOnTapAddListEvent event,
     Emitter<BoardState> emit,
   ) async {
@@ -86,5 +92,38 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
     );
     final list = await boardRepo.getAllList(event.docID);
     emit(BoardLoadedState(lists: list, showListAppBar: false));
+  }
+
+  FutureOr<void> boardPopupMenuItemEditListNameEvent(
+      BoardPopupMenuItemEditListNameEvent event, Emitter<BoardState> emit) {
+    emit(
+      BoardPopMenuEditListNameActionState(
+        context: event.context,
+        listModel: event.listModel,
+      ),
+    );
+  }
+
+  FutureOr<void> boardAddNewCardSheetEvent(
+      BoardAddNewCardSheetEvent event, Emitter<BoardState> emit) {
+    emit(
+      BoardAddNewCardSheetActionState(
+        listModel: event.listModel,
+        cardNameController: event.cardNameController,
+        cardDescriptionController: event.cardDescriptionController,
+      ),
+    );
+  }
+
+  FutureOr<void> boardDeleteListEvent(
+      BoardDeleteListEvent event, Emitter<BoardState> emit) async {
+    await boardRepo.deleteList(docID: event.docID, listID: event.listID);
+    final list = await boardRepo.getAllList(event.docID);
+    emit(BoardLoadedState(lists: list, showListAppBar: false));
+  }
+
+  FutureOr<void> boardPopMenuDeleteListEvent(
+      BoardPopMenuDeleteListEvent event, Emitter<BoardState> emit) {
+    emit(BoardDeleteListActionState(listID: event.listID));
   }
 }

@@ -195,4 +195,31 @@ class BoardRepo {
       });
     }
   }
+
+  Future<void> deleteList({
+    required String docID,
+    required String listID,
+  }) async {
+    final user = FirebaseAuth.instance.currentUser!;
+    final firestore = FirebaseFirestore.instance
+        .collection(USERS_COLLECTION)
+        .doc(user.email)
+        .collection(BOARD_COLLECTION)
+        .doc(docID);
+
+    final snapshot = await firestore.get();
+    Map<String, dynamic> boardData = snapshot.data() as Map<String, dynamic>;
+    List<dynamic> listsInBoard = boardData['listsInBoard'];
+
+    for (var item in listsInBoard) {
+      if (item['id'] == listID) {
+        listsInBoard.remove(item);
+        break;
+      }
+    }
+
+    await firestore.update({
+      'listsInBoard': listsInBoard,
+    });
+  }
 }

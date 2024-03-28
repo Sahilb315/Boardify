@@ -19,30 +19,10 @@ class CardsBuilder extends StatelessWidget {
         shrinkWrap: true,
         itemCount: item.cards.length,
         itemBuilder: (context, cardIndex) {
-          // LongPressDraggable(child: child, feedback: feedback)
           return LongPressDraggable(
             data: item.cards[cardIndex],
             childWhenDragging: Container(
-              width: double.maxFinite,
-              decoration: BoxDecoration(
-                color: Colors.grey.shade900,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.only(
-                  top: 8.0,
-                  bottom: 8.0,
-                  left: 6,
-                ),
-                child: Text(
-                  item.cards[cardIndex].cardName,
-                  style: const TextStyle(
-                    fontFamily: "Poppins",
-                    color: Colors.white,
-                    fontSize: 15,
-                  ),
-                ),
-              ),
+              color: Colors.transparent,
             ),
             feedback: Container(
               width: MediaQuery.sizeOf(context).width * 0.6,

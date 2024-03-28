@@ -51,7 +51,22 @@ class _BoardPageState extends State<BoardPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<BoardBloc, BoardState>(
       bloc: boardBloc,
-      listener: (context, state) {},
+      listenWhen: (previous, current) => current is BoardActionState,
+      buildWhen: (previous, current) => current is! BoardActionState,
+      listener: (context, state) {
+        if (state is BoardPopMenuEditListNameActionState) {
+          popUpMenuItemEditListName(state.context, state.listModel);
+        } else if (state is BoardAddNewCardSheetActionState) {
+          newCardAddSheet(
+            context: context,
+            listModel: state.listModel,
+            cardNameController: state.cardNameController,
+            cardDescriptionController: state.cardDescriptionController,
+          );
+        } else if (state is BoardDeleteListActionState) {
+          deleteListDialogBox(context, state);
+        }
+      },
       builder: (context, state) {
         if (state is BoardLoadingState) {
           return CustomBoardPage(
@@ -69,12 +84,15 @@ class _BoardPageState extends State<BoardPage> {
             backgroundColor: Colors.blue,
             appBar: state.showListAppBar
                 ? AppBar(
-                    backgroundColor: Colors.blue.shade800,
+                    backgroundColor: Colors.blue.shade700,
                     foregroundColor: Colors.white,
                     actions: [
                       IconButton(
                         onPressed: () {
                           if (state.showListAppBar) {
+                            if (addNewListNameController.text.isEmpty) {
+                              return;
+                            }
                             boardBloc.add(
                               BoardAddListEvent(
                                 docID: widget.docID,
@@ -119,7 +137,7 @@ class _BoardPageState extends State<BoardPage> {
                     ),
                   )
                 : AppBar(
-                    backgroundColor: Colors.blue.shade800,
+                    backgroundColor: Colors.blue.shade700,
                     foregroundColor: Colors.white,
                     title: const Text(
                       "Your Boards",
@@ -203,8 +221,12 @@ class _BoardPageState extends State<BoardPage> {
                                                   return [
                                                     PopupMenuItem(
                                                       onTap: () {
-                                                        popUpMenuItemEditListName(
-                                                            context, item);
+                                                        boardBloc.add(
+                                                          BoardPopupMenuItemEditListNameEvent(
+                                                            context: context,
+                                                            listModel: item,
+                                                          ),
+                                                        );
                                                       },
                                                       height: 30,
                                                       padding: const EdgeInsets
@@ -222,13 +244,14 @@ class _BoardPageState extends State<BoardPage> {
                                                     ),
                                                     PopupMenuItem(
                                                       onTap: () {
-                                                        newCardAddSheet(
-                                                          context: context,
-                                                          listModel: item,
-                                                          cardNameController:
-                                                              addNewCardNameController,
-                                                          cardDescriptionController:
-                                                              addNewCardDescriptionController,
+                                                        boardBloc.add(
+                                                          BoardAddNewCardSheetEvent(
+                                                            listModel: item,
+                                                            cardNameController:
+                                                                addNewCardNameController,
+                                                            cardDescriptionController:
+                                                                addNewCardDescriptionController,
+                                                          ),
                                                         );
                                                       },
                                                       padding: const EdgeInsets
@@ -240,6 +263,28 @@ class _BoardPageState extends State<BoardPage> {
                                                       value: "Add Card",
                                                       child: const Text(
                                                         "Add Card",
+                                                        style: TextStyle(
+                                                          color: Colors.white,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    PopupMenuItem(
+                                                      onTap: () {
+                                                        boardBloc.add(
+                                                            BoardPopMenuDeleteListEvent(
+                                                          listID: item.id,
+                                                          docID: widget.docID,
+                                                        ));
+                                                      },
+                                                      height: 30,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                        vertical: 9,
+                                                        horizontal: 18,
+                                                      ),
+                                                      value: "Delete",
+                                                      child: const Text(
+                                                        "Delete List",
                                                         style: TextStyle(
                                                           color: Colors.white,
                                                         ),
@@ -258,13 +303,14 @@ class _BoardPageState extends State<BoardPage> {
                                     ),
                                     GestureDetector(
                                       onTap: () {
-                                        newCardAddSheet(
-                                          context: context,
-                                          listModel: item,
-                                          cardNameController:
-                                              addNewCardNameController,
-                                          cardDescriptionController:
-                                              addNewCardDescriptionController,
+                                        boardBloc.add(
+                                          BoardAddNewCardSheetEvent(
+                                            listModel: item,
+                                            cardNameController:
+                                                addNewCardNameController,
+                                            cardDescriptionController:
+                                                addNewCardDescriptionController,
+                                          ),
                                         );
                                       },
                                       child: const Row(
@@ -348,6 +394,83 @@ class _BoardPageState extends State<BoardPage> {
             ),
           );
         }
+      },
+    );
+  }
+
+  Future<void> deleteListDialogBox(
+      BuildContext context, BoardDeleteListActionState state) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF020D19),
+          title: const Text(
+            "Delete list",
+            style: TextStyle(
+              color: Colors.white,
+              fontFamily: "Poppins",
+            ),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Are you sure you want to delete this list?",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontFamily: "Poppins",
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(
+                        Colors.blueGrey.shade900,
+                      ),
+                    ),
+                    child: const Text(
+                      "Cancel",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: "Poppins",
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      boardBloc.add(BoardDeleteListEvent(
+                        listID: state.listID,
+                        docID: widget.docID,
+                      ));
+                      Navigator.pop(context);
+                    },
+                    style: const ButtonStyle(
+                        backgroundColor: MaterialStatePropertyAll(Colors.red)),
+                    child: const Text(
+                      "Delete",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: "Poppins",
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            ],
+          ),
+        );
       },
     );
   }
