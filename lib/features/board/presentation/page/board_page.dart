@@ -4,13 +4,15 @@ import 'package:trello_clone/features/board/bloc/board_bloc.dart';
 import 'package:trello_clone/features/board/model/card_model.dart';
 import 'package:trello_clone/features/board/model/list_model.dart';
 import 'package:trello_clone/features/board/presentation/widgets/custom_scaffold.dart';
+import 'package:trello_clone/features/card/presentation/page/card_page.dart';
 import 'package:trello_clone/features/home/presentation/widgets/text_field.dart';
 import 'package:trello_clone/utils/text_field_decoration.dart';
 import '../widgets/cards_builder.dart';
 
 class BoardPage extends StatefulWidget {
   final String docID;
-  const BoardPage({super.key, required this.docID});
+  final String boardName;
+  const BoardPage({super.key, required this.docID, required this.boardName});
 
   @override
   State<BoardPage> createState() => _BoardPageState();
@@ -20,30 +22,26 @@ class _BoardPageState extends State<BoardPage> {
   @override
   void initState() {
     boardBloc.add(BoardFetchListEvent(docID: widget.docID));
+    addNewCardDescriptionController = TextEditingController();
+    addNewCardNameController = TextEditingController();
+    addNewListNameController = TextEditingController();
     super.initState();
   }
 
   final boardBloc = BoardBloc();
 
-  final TextEditingController listNameController = TextEditingController();
-  final TextEditingController addNewListNameController =
-      TextEditingController();
-  final TextEditingController addNewCardNameController =
-      TextEditingController();
-  final TextEditingController addNewCardDescriptionController =
-      TextEditingController();
+  late TextEditingController addNewListNameController;
+  late TextEditingController addNewCardNameController;
+  late TextEditingController addNewCardDescriptionController;
 
   final focusNode = FocusNode();
-  final addNewfocusNode = FocusNode();
 
   @override
   void dispose() {
-    listNameController.dispose();
     addNewListNameController.dispose();
     addNewCardNameController.dispose();
     addNewCardDescriptionController.dispose();
     focusNode.dispose();
-    addNewfocusNode.dispose();
     super.dispose();
   }
 
@@ -65,6 +63,31 @@ class _BoardPageState extends State<BoardPage> {
           );
         } else if (state is BoardDeleteListActionState) {
           deleteListDialogBox(context, state);
+        } else if (state is BoardNavigateToCardPageActionState) {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) => CardPage(
+                cardModel: state.cardModel,
+                docID: widget.docID,
+                listModel: state.listModel,
+              ),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                var begin = const Offset(0, 1);
+                var end = Offset.zero;
+
+                var tween = Tween(begin: begin, end: end).chain(
+                  CurveTween(curve: Curves.ease),
+                );
+
+                return SlideTransition(
+                  position: animation.drive(tween),
+                  child: child,
+                );
+              },
+            ),
+          );
         }
       },
       builder: (context, state) {
@@ -107,6 +130,8 @@ class _BoardPageState extends State<BoardPage> {
                                 ),
                               ),
                             );
+                            focusNode.unfocus();
+                            addNewListNameController.clear();
                           }
                         },
                         icon: const Icon(Icons.check),
@@ -119,9 +144,7 @@ class _BoardPageState extends State<BoardPage> {
                           isChanging: false,
                         ));
                         focusNode.unfocus();
-                        addNewfocusNode.unfocus();
                         addNewListNameController.clear();
-                        listNameController.clear();
                       },
                       icon: const Icon(
                         Icons.cancel_sharp,
@@ -139,9 +162,9 @@ class _BoardPageState extends State<BoardPage> {
                 : AppBar(
                     backgroundColor: Colors.blue.shade700,
                     foregroundColor: Colors.white,
-                    title: const Text(
-                      "Your Boards",
-                      style: TextStyle(
+                    title: Text(
+                      widget.boardName,
+                      style: const TextStyle(
                         fontFamily: "Poppins",
                       ),
                     ),
@@ -297,7 +320,10 @@ class _BoardPageState extends State<BoardPage> {
                                           ),
 
                                           ///* This is the list of cards name
-                                          CardsBuilder(item: item),
+                                          CardsBuilder(
+                                            listModel: item,
+                                            boardBloc: boardBloc,
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -364,7 +390,7 @@ class _BoardPageState extends State<BoardPage> {
                           ),
                           child: state.showListAppBar
                               ? CustomTextField(
-                                  addNewfocusNode: addNewfocusNode,
+                                  addNewfocusNode: focusNode,
                                   addNewListNameController:
                                       addNewListNameController,
                                   name: "List Name",
@@ -475,7 +501,10 @@ class _BoardPageState extends State<BoardPage> {
     );
   }
 
-  Future<void> popUpMenuItemEditListName(BuildContext context, ListModel item) {
+  Future<void> popUpMenuItemEditListName(
+    BuildContext context,
+    ListModel item,
+  ) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -585,14 +614,16 @@ class _BoardPageState extends State<BoardPage> {
                         IconButton(
                           onPressed: () {
                             String cardName = cardNameController.text;
-                            String cardDescription =
-                                cardDescriptionController.text;
-                            if (cardName.isEmpty || cardDescription.isEmpty) {
+                            if (cardName.isEmpty) {
                               return;
                             } else {
                               boardBloc.add(
                                 BoardAddCardInListEvent(
                                   cardModel: CardModel(
+                                    cardID: DateTime.now()
+                                        .millisecondsSinceEpoch
+                                        .remainder(1000)
+                                        .toString(),
                                     cardName: addNewCardNameController.text,
                                     cardDescription:
                                         addNewCardDescriptionController.text,
@@ -684,5 +715,5 @@ class _BoardPageState extends State<BoardPage> {
         );
       },
     );
-  }
+  } 
 }

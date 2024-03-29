@@ -25,6 +25,7 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
     on<BoardAddNewCardSheetEvent>(boardAddNewCardSheetEvent);
     on<BoardDeleteListEvent>(boardDeleteListEvent);
     on<BoardPopMenuDeleteListEvent>(boardPopMenuDeleteListEvent);
+    on<BoardNavigateToCardPageEvent>(boardNavigateToCardPageEvent);
   }
 
   final boardRepo = BoardRepo();
@@ -117,6 +118,7 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
 
   FutureOr<void> boardDeleteListEvent(
       BoardDeleteListEvent event, Emitter<BoardState> emit) async {
+    emit(BoardLoadingState());
     await boardRepo.deleteList(docID: event.docID, listID: event.listID);
     final list = await boardRepo.getAllList(event.docID);
     emit(BoardLoadedState(lists: list, showListAppBar: false));
@@ -125,5 +127,13 @@ class BoardBloc extends Bloc<BoardEvent, BoardState> {
   FutureOr<void> boardPopMenuDeleteListEvent(
       BoardPopMenuDeleteListEvent event, Emitter<BoardState> emit) {
     emit(BoardDeleteListActionState(listID: event.listID));
+  }
+
+  FutureOr<void> boardNavigateToCardPageEvent(
+      BoardNavigateToCardPageEvent event, Emitter<BoardState> emit) {
+    emit(BoardNavigateToCardPageActionState(
+      cardModel: event.cardModel,
+      listModel: event.listModel,
+    ));
   }
 }

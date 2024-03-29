@@ -47,3 +47,12 @@ class BoardDeleteListActionState extends BoardActionState {
 
   BoardDeleteListActionState({required this.listID});
 }
+
+class BoardNavigateToCardPageActionState extends BoardActionState {
+  final CardModel cardModel;
+  final ListModel listModel;
+  BoardNavigateToCardPageActionState({
+    required this.listModel,
+    required this.cardModel,
+  });
+}

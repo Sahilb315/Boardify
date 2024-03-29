@@ -17,8 +17,9 @@ class HomeFetchBoardsState extends HomeState {
 
 class HomeNavigateToBoardPageActionState extends HomeActionState {
   final String docID;
+  final String boardName;
 
-  HomeNavigateToBoardPageActionState({required this.docID});
+  HomeNavigateToBoardPageActionState({required this.boardName, required this.docID});
 }
 
 class HomeNewBoardBottomSheetActionState extends HomeActionState {}

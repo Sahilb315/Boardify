@@ -29,7 +29,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   FutureOr<void> homeNavigateToBoardPageEvent(
       HomeNavigateToBoardPageEvent event, Emitter<HomeState> emit) {
-    emit(HomeNavigateToBoardPageActionState(docID: event.docID));
+    emit(HomeNavigateToBoardPageActionState(docID: event.docID, boardName: event.boardName));
   }
 
   FutureOr<void> homeNewBoardSheetEvent(

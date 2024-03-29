@@ -110,6 +110,7 @@ class BoardRepo {
           cardName: cardModel.cardName,
           cardDescription: cardModel.cardDescription,
           currentList: listModel.listName,
+          cardID: cardModel.cardID,
         ).toMap(),
       );
       await firestore.update({

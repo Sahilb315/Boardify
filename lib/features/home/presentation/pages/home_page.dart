@@ -79,6 +79,7 @@ class _HomePageState extends State<HomePage> {
                 pageBuilder: (context, animation, secondaryAnimation) =>
                     BoardPage(
                   docID: state.docID,
+                  boardName: state.boardName,
                 ),
                 transitionsBuilder:
                     (context, animation, secondaryAnimation, child) {
@@ -167,6 +168,7 @@ class _HomePageState extends State<HomePage> {
                             homeBloc.add(
                               HomeNavigateToBoardPageEvent(
                                 docID: boards[index].docID,
+                                boardName: boards[index].boardName,
                               ),
                             );
                           },

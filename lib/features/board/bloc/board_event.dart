@@ -97,3 +97,9 @@ class BoardPopMenuDeleteListEvent extends BoardEvent {
 
   BoardPopMenuDeleteListEvent({required this.listID, required this.docID});
 }
+
+class BoardNavigateToCardPageEvent extends BoardEvent {
+  final CardModel cardModel;
+  final ListModel listModel;
+  BoardNavigateToCardPageEvent({required this.listModel, required this.cardModel});
+}
